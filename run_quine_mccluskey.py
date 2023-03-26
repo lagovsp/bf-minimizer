@@ -17,9 +17,9 @@ class BFSet:
         return s
 
     def __repr__(self) -> str:
-        predecessors = f'({self.sets[-2]}, {self.sets[-1]}) — ' if self.sets else ''
+        predecessors = f'({self.sets[-2]}, {self.sets[-1]}) —> ' if self.sets else ''
         itself = f'({self.num}) {self.s}'
-        return '{:>15} {:>9} {:>1}'.format(predecessors, itself, '*' if self.stuck else '')
+        return '{:>15} {:>13} {:>1}'.format(predecessors, itself, '*' if self.stuck else '')
 
     def __lt__(self, other) -> bool:
         return self.num < other.num
@@ -122,12 +122,10 @@ def quine_mccluskey(bfv: str) -> None:
 
     with open('levels.txt', 'w') as logger:
         for i, level in enumerate(history):
-            # logger.write(f'Level {i + 1}\n')
-            logger.write(f'Уровень {i + 1}\n')
+            logger.write(f'Level {i + 1}\n')
             logger.write(list_to_str(level[0]) + '\n')
             if level[1]:
-                # logger.write(f'Primary implicants from level-{i + 1}:\n')
-                logger.write(f'Первичные импликанты уровня {i + 1}:\n')
+                logger.write(f'Primary implicants from level-{i + 1}:\n')
                 logger.write(list_to_str(level[1]) + '\n')
 
     t = Texttable()
