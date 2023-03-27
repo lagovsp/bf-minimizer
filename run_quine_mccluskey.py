@@ -147,9 +147,11 @@ def quine_mccluskey(bfv: str) -> None:
         logger.write(t.draw())
 
 
+BFV = '1111001111110011111111000000000000001100000000000011110011111111'
+
+
 def main():
-    bfv = '1111001111110011111111000000000000001100000000000011110011111111'
-    quine_mccluskey(bfv)
+    quine_mccluskey(BFV)
 
 
 if __name__ == '__main__':
