@@ -99,6 +99,10 @@ def main():
     bad_fill = PatternFill('solid', fgColor='00969696')
     bad_font = Font(bold=False, color='000000')
 
+    for j in range(len(table[0])):
+        c = cell.cell.Cell(ws, row=1, column=j + 1)
+        ws.column_dimensions[c.column_letter].width = len(table[0][j])
+
     for i in range(1, len(table)):
         for j in range(len(table[i])):
             c = cell.cell.Cell(ws, row=i + 1, column=j + 1)
