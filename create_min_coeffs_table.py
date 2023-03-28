@@ -24,6 +24,9 @@ class Cell:
     def __eq__(self, other):
         return self.s == other.s
 
+    def k_str(self, ids: str) -> str:
+        return f'K({"".join([("!" if self.s[i] == "0" else "") + ind for i, ind in enumerate(ids)])})'
+
 
 def get_table(tab: list[list[Cell]]) -> str:
     t = Texttable()
@@ -34,6 +37,30 @@ def get_table(tab: list[list[Cell]]) -> str:
     t.set_deco(Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
     t.add_rows(tab)
     return t.draw()
+
+
+def get_equations(tab: list[list[Cell]]) -> str:
+    def line_has_1s(l: list[Cell]) -> bool:
+        for j in range(len(l) - 1):
+            if not l[j].crossed_out:
+                return True
+        return False
+
+    out_s = str()
+    for i in range(1, len(tab)):
+        if not line_has_1s(tab[i]):
+            continue
+
+        for j in range(len(tab[i]) - 1):
+            if tab[i][j].crossed_out:
+                continue
+
+            out_s += tab[i][j].k_str(tab[0][j].s)
+            out_s += ' v' if j != len(tab[i]) - 2 else ''
+
+        out_s += ' = 1\n'
+
+    return out_s
 
 
 def main():
@@ -121,6 +148,9 @@ def main():
             ws[c.coordinate].font = font
 
     wb.save('mc-table.xlsx')
+
+    with open('mc-eqs.txt', 'w') as writer:
+        writer.write(get_equations(table))
 
 
 if __name__ == '__main__':
