@@ -4,6 +4,7 @@ import re
 
 from openpyxl import Workbook, cell
 from openpyxl.styles import Alignment, Font, PatternFill, Border, Side
+from openpyxl.styles.borders import BORDER_THIN
 
 from run_quine_mccluskey import BFV
 from texttable import Texttable
@@ -93,13 +94,13 @@ def main():
 
     font = Font(bold=False, color='000000')
     al = Alignment(horizontal='center', vertical='center')
-    border = Border(left=Side(border_style=None,
+    border = Border(left=Side(border_style=BORDER_THIN,
                               color='000000'),
-                    right=Side(border_style=None,
+                    right=Side(border_style=BORDER_THIN,
                                color='000000'))
     ok_fill = PatternFill('solid', fgColor='00FFFFFF')
 
-    bad_fill = PatternFill('solid', fgColor='00969696')
+    bad_fill = PatternFill('solid', fgColor='00C0C0C0')
 
     for j in range(len(table[0])):
         c = cell.cell.Cell(ws, row=1, column=j + 1)
