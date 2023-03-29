@@ -95,12 +95,14 @@ def get_equations(tab: list[list[Cell]]) -> str:
         if not line_has_1s(tab[i]):
             continue
 
+        first = True
         for j in range(len(tab[i]) - 1):
             if tab[i][j].crossed_out or tab[i][j].glued_up:
                 continue
 
+            out_s += ' v' if not first else ''
+            first = False
             out_s += tab[i][j].k_str(tab[0][j].s)
-            out_s += ' v' if j != len(tab[i]) - 2 else ''
 
         out_s += ' = 1\n'
 
