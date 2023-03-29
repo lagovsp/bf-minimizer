@@ -30,9 +30,7 @@ class Cell:
 
     @staticmethod
     def lhs_can_be_overwritten_by_rhs(lhs_s: str, lhs_ids: str, rhs_s: str, rhs_ids: str) -> bool:
-        # print(f'lhss {lhs_s} lhsid {lhs_ids}, rhss {rhs_s}, rhsid {rhs_ids}')
         if not len(rhs_s) == len(lhs_s) - 1:
-            # print(f'bad len - False')
             return False
 
         more = 0
@@ -42,23 +40,17 @@ class Cell:
                 continue
 
             if not lhs_s[i] == rhs_s[rhs_ids.find(id)]:
-                # print(f'x{id} not match')
                 return False
 
-        # print(f'more {more}')
         if not more == 1:
-            # print('False')
             return False
-        # print('True')
         return True
 
 
 def glue_table(tab: list[list[Cell]]) -> None:
     for i in range(1, len(tab)):
-        # if i == 2:
-        #     a = input()
         for j in range(len(tab[i]) - 2, -1, -1):
-            if tab[i][j].crossed_out:
+            if tab[i][j].crossed_out or tab[i][j].glued_up:
                 continue
             for check_j in range(len(tab[i]) - 2, -1, -1):
                 if tab[i][check_j].crossed_out:
@@ -66,9 +58,7 @@ def glue_table(tab: list[list[Cell]]) -> None:
                 if Cell.lhs_can_be_overwritten_by_rhs(
                         tab[i][j].s, tab[0][j].s,
                         tab[i][check_j].s, tab[0][check_j].s):
-                    for erase_i in range(1, len(tab)):
-                        if tab[i][j].s == tab[erase_i][j].s and not tab[erase_i][j].crossed_out:
-                            tab[erase_i][j].glued_up = True
+                    tab[i][j].glued_up = True
                     break
 
 
