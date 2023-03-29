@@ -14,6 +14,7 @@ class Cell:
     def __init__(self, s: str, co: bool):
         self.s = s
         self.crossed_out = co
+        self.glued_up = False
 
     def __repr__(self) -> str:
         return self.s
@@ -26,6 +27,49 @@ class Cell:
 
     def k_str(self, ids: str) -> str:
         return f'K({"".join([("!" if self.s[i] == "0" else "") + ind for i, ind in enumerate(ids)])})'
+
+    @staticmethod
+    def lhs_can_be_overwritten_by_rhs(lhs_s: str, lhs_ids: str, rhs_s: str, rhs_ids: str) -> bool:
+        # print(f'lhss {lhs_s} lhsid {lhs_ids}, rhss {rhs_s}, rhsid {rhs_ids}')
+        if not len(rhs_s) == len(lhs_s) - 1:
+            # print(f'bad len - False')
+            return False
+
+        more = 0
+        for i, id in enumerate(lhs_ids):
+            if id not in rhs_ids:
+                more += 1
+                continue
+
+            if not lhs_s[i] == rhs_s[rhs_ids.find(id)]:
+                # print(f'x{id} not match')
+                return False
+
+        # print(f'more {more}')
+        if not more == 1:
+            # print('False')
+            return False
+        # print('True')
+        return True
+
+
+def glue_table(tab: list[list[Cell]]) -> None:
+    for i in range(1, len(tab)):
+        # if i == 2:
+        #     a = input()
+        for j in range(len(tab[i]) - 2, -1, -1):
+            if tab[i][j].crossed_out:
+                continue
+            for check_j in range(len(tab[i]) - 2, -1, -1):
+                if tab[i][check_j].crossed_out:
+                    continue
+                if Cell.lhs_can_be_overwritten_by_rhs(
+                        tab[i][j].s, tab[0][j].s,
+                        tab[i][check_j].s, tab[0][check_j].s):
+                    for erase_i in range(1, len(tab)):
+                        if tab[i][j].s == tab[erase_i][j].s and not tab[erase_i][j].crossed_out:
+                            tab[erase_i][j].glued_up = True
+                    break
 
 
 def get_table(tab: list[list[Cell]]) -> str:
@@ -52,7 +96,7 @@ def get_equations(tab: list[list[Cell]]) -> str:
             continue
 
         for j in range(len(tab[i]) - 1):
-            if tab[i][j].crossed_out:
+            if tab[i][j].crossed_out or tab[i][j].glued_up:
                 continue
 
             out_s += tab[i][j].k_str(tab[0][j].s)
@@ -129,6 +173,8 @@ def main():
 
     bad_fill = PatternFill('solid', fgColor='00C0C0C0')
 
+    ag_fill = PatternFill('solid', fgColor='009999FF')
+
     for j in range(len(table[0])):
         c = cell.cell.Cell(ws, row=1, column=j + 1)
         ws.column_dimensions[c.column_letter].width = len(table[0][j]) + 1
@@ -147,7 +193,18 @@ def main():
             ws[c.coordinate].fill = ok_fill
             ws[c.coordinate].font = font
 
-    wb.save('mc-table.xlsx')
+    wb.save('mc-table-crossed.xlsx')
+
+    glue_table(table)
+
+    for i in range(1, len(table)):
+        for j in range(len(table[i]) - 1):
+            c = cell.cell.Cell(ws, row=i + 1, column=j + 1)
+
+            if not table[i][j].crossed_out and not table[i][j].glued_up:
+                ws[c.coordinate].fill = ag_fill
+
+    wb.save('mc-table-crossed-glued.xlsx')
 
     with open('mc-eqs.txt', 'w') as writer:
         writer.write(get_equations(table))
